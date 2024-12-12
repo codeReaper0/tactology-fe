@@ -1,0 +1,43 @@
+{
+	"name": "tactology",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev --turbopack",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@material-tailwind/react": "^2.1.10",
+		"@types/js-cookie": "^3.0.6",
+		"axios": "^1.7.7",
+		"class-variance-authority": "^0.7.0",
+		"clsx": "^2.1.1",
+		"formik": "^2.4.6",
+		"js-cookie": "^3.0.5",
+		"react": "^18",
+		"react-dom": "^18",
+		"next": "15.1.0",
+		"next-auth": "^4.24.10",
+		"next-cookies": "^2.0.3",
+		"react-hot-toast": "^2.4.1",
+		"react-paginate": "^8.2.0",
+		"sharp": "^0.33.5",
+		"tailwind-merge": "^2.5.4",
+		"tailwind-scrollbar-hide": "^1.1.7",
+		"yup": "^1.4.0"
+	},
+	"devDependencies": {
+		"@svgr/webpack": "^8.1.0",
+		"typescript": "^5",
+		"@types/node": "^20",
+		"@types/react": "18.2.42",
+		"@types/react-dom": "^18",
+		"postcss": "^8",
+		"tailwindcss": "^3.4.1",
+		"eslint": "^9",
+		"eslint-config-next": "15.1.0",
+		"@eslint/eslintrc": "^3"
+	}
+}
