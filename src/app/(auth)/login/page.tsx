@@ -1,4 +1,5 @@
 import LoginForm from "@/components/auth/LoginForm";
+import Link from "next/link";
 import React from "react";
 
 export default function LoginPage() {
@@ -6,7 +7,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
       <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
         <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 h-full">
-          <div className="py-12 h-full flex flex-col items-center justify-between">
+          <div className="py-12 h-full flex flex-col items-center justify-center">
             <div>
               <h1 className="text-2xl xl:text-3xl font-extrabold text-center">
                 Sign in
@@ -16,16 +17,12 @@ export default function LoginPage() {
               </p>
             </div>
             <LoginForm />
-
-            <p className="mt-6 text-xs text-gray-600 text-center">
-              I agree to abide by tactology&apos;s <br />
-              <a href="#" className="border-b border-gray-500 border-dotted">
-                Terms of Service{" "}
-              </a>
-              and its{" "}
-              <a href="#" className="border-b border-gray-500 border-dotted">
-                Privacy Policy
-              </a>
+            <p className="text-xs text-gray-600 mt-2">
+              New here{" "}
+              <Link href={"/register"} className="font-bold">
+                Sign up
+              </Link>{" "}
+              to access our service.
             </p>
           </div>
         </div>

@@ -19,49 +19,52 @@ const handler = NextAuth({
         }
 
         try {
-          // GraphQL mutation to log in the user
           const query = `
-            mutation Login($loginInput: LoginUserInput!) {
-              login(loginUserDto: $loginInput) {
-                accessToken
-                user {
-                  id
-                  email
-                  name
-                }
-              }
-            }
-          `;
+			query Login($loginUserDto: LoginUserDto!) {
+			  loginUser(loginUserDto: $loginUserDto) {
+				accessToken
+			  }
+			}
+		  `;
 
           const variables = {
-            loginInput: {
+            loginUserDto: {
               email,
               password,
             },
           };
 
-          // Send the API request
-          const response = await axios.post(API_URL, {
-            query,
-            variables,
-          });
-
-          const data = response.data?.data?.login;
+          const response = await axios.post(
+            API_URL,
+            {
+              query,
+              variables,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = response.data?.data?.loginUser.accessToken;
 
           if (!data) {
-            throw new Error("Invalid login response from server.");
+            throw new Error(
+              response.data?.errors?.[0]?.message ||
+                "Unknown error during login"
+            );
           }
-          console.log(response);
-          // Return user data and accessToken
+
           return {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name,
-            accessToken: data.accessToken,
+            id: "0",
+            email: email,
+            name: "",
+            accessToken: data,
           };
-        } catch (error) {
-          console.error("Error during login:", error);
-          throw new Error("Invalid email or password.");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          console.log(error?.message);
+          throw new Error(error?.message);
         }
       },
     }),
@@ -71,21 +74,19 @@ const handler = NextAuth({
   },
   callbacks: {
     async jwt({token, user}) {
-      // Add accessToken to the token if it's a new login
       if (user) {
         token.accessToken = user.accessToken;
       }
       return token;
     },
     async session({session, token}) {
-      // Add accessToken from the token to the session
       session.accessToken = token.accessToken as string | undefined;
       return session;
     },
   },
   pages: {
-    error: "/login",
-    signIn: "/login",
+    error: "/login", // Custom error page
+    signIn: "/login", // Custom sign-in page
   },
 });
 

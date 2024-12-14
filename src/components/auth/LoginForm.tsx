@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import {useRouter} from "next/navigation";
 import {Form, Formik, FormikHelpers} from "formik";
 import {Input, InputPassword} from "../ui/forms";
-import Link from "next/link";
 import {signIn} from "next-auth/react";
 
 const initialValues = {
@@ -31,16 +30,15 @@ export default function LoginForm() {
         ...values,
         redirect: false,
       });
+      console.log(res);
 
       if (res?.ok) {
         toast.success("Login Successful");
         setTimeout(() => {
           router.push("/dashboard");
         }, 1000);
-      } else if (res?.status === 401) {
-        throw new Error("Invalid credentials");
       } else {
-        throw new Error("Something went wrong");
+        throw new Error(res!.error!);
       }
       resetForm();
     } catch (error: unknown) {
@@ -68,8 +66,8 @@ export default function LoginForm() {
                 <Input
                   type="text"
                   name="email"
-                  label="Email or Phone number"
-                  placeholder="Email or Phone number"
+                  label="Email"
+                  placeholder="Email"
                 />
                 {/* Password */}
                 <div className="relative">
@@ -78,13 +76,6 @@ export default function LoginForm() {
                     label="Password"
                     placeholder="Enter your password"
                   />
-                  <Link
-                    href="/forgot-password"
-                    className="text-xs absolute top-0 right-0"
-                  >
-                    {" "}
-                    Forgot password?
-                  </Link>
                 </div>
               </div>
               <Button

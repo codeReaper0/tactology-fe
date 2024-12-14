@@ -1,4 +1,5 @@
 import SignupForm from "@/components/auth/SignupForm";
+import Link from "next/link";
 import React from "react";
 
 export default function RegisterPage() {
@@ -16,7 +17,12 @@ export default function RegisterPage() {
               </p>
             </div>
             <SignupForm />
-
+            <p className="text-xs text-gray-600 mt-2">
+              Already have an account{" "}
+              <Link href={"/login"} className="font-bold">
+                Sign in
+              </Link>
+            </p>
             <p className="mt-6 text-xs text-gray-600 text-center">
               I agree to abide by tactology&apos;s <br />
               <a href="#" className="border-b border-gray-500 border-dotted">

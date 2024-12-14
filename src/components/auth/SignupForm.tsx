@@ -200,8 +200,8 @@ export default function SignupForm() {
                       />
                     </div>
                     <label htmlFor="agree" className="text-xs text-text-dark">
-                      I have read and agree to Bento’s <b>Terms of Use</b> and{" "}
-                      <b>Privacy policy.</b>
+                      I have read and agree to tactology’s <b>Terms of Use</b>{" "}
+                      and <b>Privacy policy.</b>
                     </label>
                   </div>
                   <ErrorMessage
