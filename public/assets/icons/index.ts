@@ -1,2 +1,3 @@
 import Loader from "./loader1.svg";
-export {Loader};
+import EyeIcon from "./eye_icon.svg";
+export {EyeIcon, Loader};
