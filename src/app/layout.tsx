@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import "./globals.css";
 import Providers from "@/components/auth/Providers";
+import "react-phone-number-input/style.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",

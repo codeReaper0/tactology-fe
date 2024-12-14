@@ -9,9 +9,6 @@ export default withAuth(
     const isAuth = await getToken({req});
     const isLoginPage = pathname.startsWith("/login");
     const isSignupPage = pathname.startsWith("/register");
-    const isForgotPage = pathname.startsWith("/forgot-password");
-    // const isVerifyPage = pathname.startsWith("/verify");
-    const isResetPage = pathname.startsWith("/reset-password");
 
     const sensitiveRoutes = ["/dashboard"];
 
@@ -19,13 +16,7 @@ export default withAuth(
       pathname.startsWith(route)
     );
 
-    if (
-      isLoginPage ||
-      isSignupPage ||
-      isForgotPage ||
-      isResetPage
-      //    ||      isVerifyPage
-    ) {
+    if (isLoginPage || isSignupPage) {
       if (isAuth) {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
@@ -47,12 +38,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    "/login",
-    "/verify",
-    "/register/:path*",
-    "/forgot-password",
-    "/reset-password",
-    "/dashboard/:path*",
-  ],
+  matcher: ["/login", "/register/:path*", "/dashboard/:path*"],
 };

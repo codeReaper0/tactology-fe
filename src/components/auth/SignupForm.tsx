@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, {useState} from "react";
@@ -7,26 +8,30 @@ import toast from "react-hot-toast";
 import {useRouter} from "next/navigation";
 import {ErrorMessage, Form, Formik, FormikHelpers} from "formik";
 import {Input, InputPassword} from "../ui/forms";
-// import PhoneInput from "react-phone-number-input";
+import PhoneInput from "react-phone-number-input";
+import axios from "axios";
+import {API_URL} from "@/lib/axios";
 
 const initialValues = {
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
-  //   phone_number: "",
+  phone_number: "",
   password: "",
   agree: false,
 };
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required("Full name is required"),
+  firstName: yup.string().required("First name is required"),
+  lastName: yup.string().required("Last name is required"),
   email: yup
     .string()
     .email("Invalid email address")
     .required("Email is required"),
-  //   phone_number: yup
-  //     .string()
-  //     .matches(/^\d{10,15}$/, "Invalid phone number format")
-  //     .required("Phone number is required"),
+  phone_number: yup
+    .string()
+    .matches(/^\+?\d{10,15}$/, "Invalid phone number format")
+    .required("Phone number is required"),
   password: yup
     .string()
     .required("Password is required")
@@ -40,18 +45,8 @@ const validationSchema = yup.object().shape({
 
 export default function SignupForm() {
   const router = useRouter();
-  //   const [profilePhoneValue, setProfilePhoneValue] = useState("");
   const [termsChecked, setTermsChecked] = useState(false);
 
-  //   const handleProfileNumberChange = (
-  //     event: React.ChangeEvent<HTMLInputElement>
-  //   ) => {
-  //     if (event && event.target && event.target.value !== undefined) {
-  //       setProfilePhoneValue(event.target.value);
-  //     } else {
-  //       setProfilePhoneValue("");
-  //     }
-  //   };
   const handleCheckboxChange = (event: any, setter: any) => {
     setter(event.target.checked);
   };
@@ -61,24 +56,59 @@ export default function SignupForm() {
     formikHelpers: FormikHelpers<typeof initialValues>
   ) => {
     const {setSubmitting, resetForm} = formikHelpers;
-    const data = {termsChecked: termsChecked};
+    const {firstName, lastName, email, password, phone_number} = values;
+
     try {
-      console.log(data);
-      toast.success(
-        "User registration successful, check your email for verification link."
-      );
-      router.push(`/verify`);
+      // GraphQL mutation to register the user
+      const query = `
+		  mutation Register($registerUserDto: RegisterUserDto!) {
+			registerUser(registerUserDto: $registerUserDto) {
+			  accessToken
+			}
+		  }
+		`;
+
+      const variables = {
+        registerUserDto: {
+          firstName,
+          lastName,
+          email,
+          password,
+          phoneNumber: phone_number,
+        },
+      };
+
+      const response = await axios.post(API_URL, {
+        query,
+        variables,
+      });
+      console.log(response);
+
+      const data = response.data?.data?.registerUser;
+
+      if (!data) {
+        throw new Error(response.data?.errors[0].message);
+      }
+
+      // Assuming the response contains the accessToken
+      toast.success("User registration successful, proceed to login");
+
+      // Redirect to the verify page
+      router.push("/login");
       resetForm();
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
+    } catch (error: any) {
+      if (error.message) {
+        // Handle known API errors
+        toast.error(error.message || "Registration failed.");
       } else {
-        toast.error("Something went wrong");
+        // Handle unexpected errors
+        toast.error("Something went wrong.");
       }
     } finally {
       setSubmitting(false);
     }
   };
+
   return (
     <div className="mt-4 w-full">
       <Formik
@@ -90,13 +120,23 @@ export default function SignupForm() {
           return (
             <Form action="" autoComplete="off">
               <div className="grid grid-cols-1 gap-6 w-full mb-8">
-                {/* Name */}
-                <Input
-                  type="name"
-                  name="name"
-                  label="Full name"
-                  placeholder="Full name"
-                />
+                <div className="grid grid-cols-2 gap-6">
+                  {/* First Name */}
+                  <Input
+                    type="name"
+                    name="firstName"
+                    label="First name"
+                    placeholder="First name"
+                  />
+
+                  {/* Last Name */}
+                  <Input
+                    type="name"
+                    name="lastName"
+                    label="Last name"
+                    placeholder="Last name"
+                  />
+                </div>
                 {/* Name */}
                 <Input
                   type="email"
@@ -114,17 +154,24 @@ export default function SignupForm() {
                     Phone number
                   </label>
 
-                  {/* <div className="flex border border-[#CECECE] rounded h-12 p-4 ">
+                  <div className="flex border border-[#CECECE] rounded h-12 p-4 ">
                     <PhoneInput
                       defaultCountry="NG"
                       international
                       placeholder="Phone number"
-                      value={profilePhoneValue}
-                      onChange={() => handleProfileNumberChange}
+                      value={formik.values.phone_number}
+                      onChange={(value: any) =>
+                        formik.setFieldValue("phone_number", value)
+                      }
                       className="border-none h-full focus:outline-none focus:border-none text-text-primary w-full bg-transparent text-sm "
                       name="phone_number"
                     />
-                  </div> */}
+                  </div>
+                  <ErrorMessage
+                    name={"phone_number"}
+                    component="p"
+                    className="text-xs text-primary italic mt-1"
+                  />
                 </div>
 
                 {/* Password */}
