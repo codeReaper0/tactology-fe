@@ -12,7 +12,7 @@ export default function Header() {
           <span>Tactology</span>
         </p>
         <p className="text-2xl text-text-secondary hidden lg:block">
-          <span>Hello, Tella</span>
+          <span>Hello</span>
         </p>
       </div>
       <div className="flex gap-4">
