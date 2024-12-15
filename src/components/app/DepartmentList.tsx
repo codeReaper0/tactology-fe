@@ -12,7 +12,8 @@ import {TableDataD} from "../ui/table";
 import EmptyStateUi from "../ui/EmptyStateUi";
 import {API_URL} from "@/lib/axios";
 import moment from "moment";
-const TABLE_HEAD = ["#", "Name", "Date Created"];
+import ViewDepartment from "./ViewDepartment";
+const TABLE_HEAD = ["#", "Name", "Date Created", "Actions"];
 
 const DepartmentList: React.FC = () => {
   const [active, setActive] = useState(1);
@@ -118,15 +119,25 @@ const DepartmentList: React.FC = () => {
         </thead>
         <tbody className="divide-y">
           {data.length > 0 &&
-            data.map(({id, name, createdAt}: any, index: number) => (
-              <tr key={id}>
-                <TableDataD content={index + 1} />
-                <TableDataD content={name} />
-                <TableDataD
-                  content={moment(createdAt).format("MMMM DD, YYYY")}
-                />
-                <td className="flex items-center gap-3 py-4">
-                  {/* <EditProduct
+            data.map(
+              (
+                {id, name, createdAt, subDepartments}: Department,
+                index: number
+              ) => (
+                <tr key={id}>
+                  <TableDataD content={index + 1} />
+                  <TableDataD content={name} />
+                  <TableDataD
+                    content={moment(createdAt).format("MMMM DD, YYYY")}
+                  />
+                  <td className="flex items-center gap-3 p-4">
+                    <ViewDepartment
+                      createdAt={createdAt}
+                      id={id}
+                      name={name}
+                      subDepartments={subDepartments}
+                    />
+                    {/* <EditProduct
                     id={id}
                     price={price}
                     quantity={quantity}
@@ -140,9 +151,10 @@ const DepartmentList: React.FC = () => {
                     name={name}
                   />
                   <DeleteProduct id={id} /> */}
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              )
+            )}
         </tbody>
       </table>
       {loading ? (

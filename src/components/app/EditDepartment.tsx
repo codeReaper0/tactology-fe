@@ -72,7 +72,7 @@ const EditProduct: React.FC<EditProps> = ({
       >
         <DialogBody className="w-[400px] max-h-[90vh] p-0 bg-white rounded-10 overflow-hidden">
           <div className="flex items-center justify-between p-3 border-b">
-            <p className="text-black font-semibold text-lg">Edit Product</p>
+            <p className="text-primary font-semibold text-lg">Edit Product</p>
             <button onClick={handleOpen}>
               <CloseIcon />
             </button>
@@ -126,7 +126,7 @@ const EditProduct: React.FC<EditProps> = ({
                   </div>
 
                   <Button
-                    className="w-full bg-black disabled:bg-black/50 text-white py-2 rounded font-medium flex items-center justify-center"
+                    className="w-full bg-primary disabled:bg-primary/50 text-white py-2 rounded font-medium flex items-center justify-center"
                     type="submit"
                     disabled={formik.isSubmitting}
                   >

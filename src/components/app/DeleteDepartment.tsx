@@ -45,13 +45,13 @@ const DeleteDepartment: React.FC<EditProps> = ({id}) => {
             </button>
           </div>
           <div className="p-4">
-            <p className="text-sm font-semibold text-center text-black mb-4">
+            <p className="text-sm font-semibold text-center text-primary mb-4">
               Are you sure you want to delete this product
             </p>
             {/* This section contains the button to cofirm or cancel the delete  */}
             <div className="flex justify-center gap-4">
               <button
-                className="py-3 px-6 bg-transparent border border-black rounded-md text-black text-sm font-semibold"
+                className="py-3 px-6 bg-transparent border border-primary rounded-md text-primary text-sm font-semibold"
                 onClick={handleOpen}
               >
                 Cancel

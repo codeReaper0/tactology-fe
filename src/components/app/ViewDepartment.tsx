@@ -4,18 +4,13 @@ import {Dialog, DialogBody} from "@material-tailwind/react";
 import {CloseIcon, EyeIcon} from "icons/index";
 
 interface EditProps {
+  id: string;
   name: string;
-  description: string;
-  price: number;
-  quantity: number;
+  createdAt: Date;
+  subDepartments: SubDepartment[];
 }
 
-const ViewProduct: React.FC<EditProps> = ({
-  name,
-  description,
-  price,
-  quantity,
-}) => {
+const ViewDepartment: React.FC<EditProps> = ({name, subDepartments}) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(!open);
@@ -30,7 +25,7 @@ const ViewProduct: React.FC<EditProps> = ({
         handler={handleOpen}
         className="focus:outline-none flex items-center justify-center rounded-none bg-transparent shadow-none"
       >
-        <DialogBody className="w-[400px] max-h-[90vh] p-0 bg-white rounded-10 overflow-hidden rounded-md">
+        <DialogBody className="w-[400px] max-h-[90vh] p-0 bg-white rounded-10 overflow-hidden">
           <div className="flex items-center justify-between p-3 border-b">
             <p className="text-black font-semibold text-lg">
               {name.substring(0, 30)}
@@ -45,39 +40,34 @@ const ViewProduct: React.FC<EditProps> = ({
               <div className="w-full flex flex-col gap-2 text-sm">
                 <label className="font-medium text-black">Name</label>
                 <input
-                  className="border border-black text-black font-medium rounded px-3 py-2 focus:outline-none focus:border-inherit w-full bg-white text-sm"
+                  className="border border-primary text-black font-medium rounded px-3 py-2 focus:outline-none focus:border-inherit w-full bg-white text-sm"
                   value={name}
                   disabled
                 />
               </div>
-              {/* Description */}
-              <div className="w-full flex flex-col gap-2 text-sm">
-                <label className="font-medium text-black">Description</label>
-                <input
-                  className="border border-black text-black font-medium rounded px-3 py-2 focus:outline-none focus:border-inherit w-full bg-white text-sm"
-                  value={description}
-                  disabled
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {/* Price */}
-                <div className="w-full flex flex-col gap-2 text-sm">
-                  <label className="font-medium text-black">Price</label>
-                  <input
-                    className="border border-black text-black font-medium rounded px-3 py-2 focus:outline-none focus:border-inherit w-full bg-white text-sm"
-                    value={price}
-                    disabled
-                  />
-                </div>
-                {/* Quantity */}
-                <div className="w-full flex flex-col gap-2 text-sm">
-                  <label className="font-medium text-black">Quantity</label>
-                  <input
-                    className="border border-black text-black font-medium rounded px-3 py-2 focus:outline-none focus:border-inherit w-full bg-white text-sm"
-                    value={quantity}
-                    disabled
-                  />
-                </div>
+
+              <div className="">
+                <h4 className="font-semibold">Sub Departments</h4>
+
+                {subDepartments !== null ? (
+                  subDepartments.length > 0 ? (
+                    subDepartments.map(({id, name}, index) => {
+                      return (
+                        <div
+                          className="flex gap-2 text-sm text-black/50"
+                          key={index}
+                        >
+                          <p className="">{id}</p>
+                          <p className="">{name}</p>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p>No sub departments yet</p>
+                  )
+                ) : (
+                  <p>No sub departments yet</p>
+                )}
               </div>
             </div>
           </div>
@@ -87,4 +77,4 @@ const ViewProduct: React.FC<EditProps> = ({
   );
 };
 
-export default ViewProduct;
+export default ViewDepartment;
