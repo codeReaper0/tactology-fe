@@ -18,20 +18,10 @@ const DepartmentForm: React.FC = () => {
 
   const initialValues = {
     name: "",
-    description: "",
-    price: 0,
-    quantity: 0,
   };
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
-    description: Yup.string().required("Description is required"),
-    price: Yup.number()
-      .min(0, "Price must be 0 or more")
-      .required("Price is required"),
-    quantity: Yup.number()
-      .min(0, "Quantity must be 0 or more")
-      .required("Quantity is required"),
   });
 
   const onSubmit = async (
@@ -87,47 +77,6 @@ const DepartmentForm: React.FC = () => {
                     label="Name"
                     placeholder="Name"
                   />
-                  <Input
-                    type="text"
-                    name="description"
-                    label="Description"
-                    placeholder="Description"
-                  />
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      type="number"
-                      name="price"
-                      label="Price"
-                      placeholder="0"
-                    />
-                    <Input
-                      type="number"
-                      name="quantity"
-                      label="Quantity"
-                      placeholder="0"
-                    />
-                  </div>
-
-                  {/* <div>
-                    <p className="font-semibold mb-2">Sub-Departments</p>
-                    {subDepartments.map((subDepartment, index) => (
-                      <div key={index} className="flex gap-4 mb-4">
-                        <Input
-                          type="text"
-                          value={subDepartment.name}
-                          placeholder={`Sub-Department ${index + 1}`}
-                          onChange={(e: any) => handleSubDepartmentChange(index, e.target.value)}
-                        />
-                        <button type="button" onClick={() => removeSubDepartment(index)}>
-                          Remove
-                        </button>
-                      </div>
-                    ))}
-                    <button type="button" onClick={addSubDepartment} className="text-primary underline">
-                      + Add Sub-Department
-                    </button>
-                  </div> */}
                 </div>
 
                 <Button
