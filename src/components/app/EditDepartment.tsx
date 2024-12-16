@@ -1,61 +1,92 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {useState} from "react";
-import * as yup from "yup";
-import {Form, Formik} from "formik";
-import toast from "react-hot-toast";
+import React, {useState} from "react";
+import axios from "axios";
+import {Formik, Form} from "formik";
+import * as Yup from "yup";
 import {Dialog, DialogBody} from "@material-tailwind/react";
+import toast from "react-hot-toast";
 import {CloseIcon, EditIcon} from "icons/index";
 import {Input} from "../ui/forms";
 import Button from "../ui/button";
+import {API_URL} from "@/lib/axios";
+import {signOut, useSession} from "next-auth/react";
 
-interface EditProps {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-}
-
-interface Value {
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-}
-
-const validationSchema = yup.object().shape({
-  name: yup.string().required("Name is required"),
-  description: yup.string().required("Description is required"),
-  price: yup
-    .number()
-    .required("Price is required")
-    .min(5, "Price must be greater than 5"),
-  quantity: yup.number().required("Quantity is required"),
-});
-
-const EditProduct: React.FC<EditProps> = ({
-  id,
-  name,
-  description,
-  price,
-  quantity,
+export const EditDepartmentForm = ({
+  fetchDepartments,
+  department,
+}: {
+  fetchDepartments: () => Promise<void>;
+  department: {id: string; name: string};
 }) => {
   const [open, setOpen] = useState(false);
+  const {data: session} = useSession();
 
-  // This function handle the modal state
   const handleOpen = () => setOpen(!open);
 
-  //   This function updates product
-  const onSubmit = async (values: Value, setSubmitting: any) => {
-    const {name, description, price, quantity} = values;
+  const initialValues = {
+    name: department?.name || "",
+  };
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required("Name is required"),
+  });
+
+  const onSubmit = async (
+    values: typeof initialValues,
+    {setSubmitting}: any
+  ) => {
+    if (!session?.accessToken) {
+      signOut();
+      return;
+    }
 
     try {
-      toast.success("Product edited successfully");
-      handleOpen();
+      const query = `
+        mutation UpdateDepartment($updateDepartmentDto: UpdateDepartmentDto!) {
+          updateDepartment(updateDepartmentDto: $updateDepartmentDto) {
+            id
+            name
+          }
+        }
+      `;
+
+      const variables = {
+        updateDepartmentDto: {
+          id: department.id, // Include the department ID for the update mutation
+          name: values.name,
+        },
+      };
+
+      const response = await axios.post(
+        API_URL,
+        {
+          query,
+          variables,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+
+      const data = response.data?.data?.updateDepartment;
+
+      if (!data) {
+        throw new Error(
+          response.data?.errors?.[0]?.message || "An error occurred"
+        );
+      }
+
+      toast.success(`Department "${data.name}" updated successfully`);
+      fetchDepartments();
+      setOpen(false);
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.message || "Failed to update department");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -64,7 +95,6 @@ const EditProduct: React.FC<EditProps> = ({
       <button onClick={handleOpen}>
         <EditIcon />
       </button>
-      {/* This component represents the modal dialog for product deletion confirmation. */}
       <Dialog
         open={open}
         handler={handleOpen}
@@ -72,69 +102,39 @@ const EditProduct: React.FC<EditProps> = ({
       >
         <DialogBody className="w-[400px] max-h-[90vh] p-0 bg-white rounded-10 overflow-hidden">
           <div className="flex items-center justify-between p-3 border-b">
-            <p className="text-primary font-semibold text-lg">Edit Product</p>
+            <p className="text-secondary font-semibold text-lg">
+              Edit Department
+            </p>
             <button onClick={handleOpen}>
               <CloseIcon />
             </button>
           </div>
 
           <Formik
-            initialValues={{
-              name,
-              description,
-              price,
-              quantity,
-            }}
+            initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
           >
-            {(formik) => {
-              return (
-                // This form is to update the inventory using formik
-                <Form action="" autoComplete="off" className="p-4">
-                  <div className="grid grid-cols-1 gap-4 w-full mb-8">
-                    {/* Name */}
-                    <Input
-                      type="text"
-                      name="name"
-                      label="Name"
-                      placeholder="Name"
-                    />
-                    {/* Description */}
-                    <Input
-                      type="text"
-                      name="description"
-                      label="Description"
-                      placeholder="Description"
-                    />
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* price */}
-                      <Input
-                        type="number"
-                        name="price"
-                        label="Price"
-                        placeholder="0"
-                      />
-                      {/* quantity */}
-                      <Input
-                        type="number"
-                        name="quantity"
-                        label="Quauntity"
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
+            {(formik) => (
+              <Form action="" autoComplete="off" className="p-4">
+                <div className="grid grid-cols-1 gap-4 w-full mb-8">
+                  <Input
+                    type="text"
+                    name="name"
+                    label="Name"
+                    placeholder="Enter department name"
+                  />
+                </div>
 
-                  <Button
-                    className="w-full bg-primary disabled:bg-primary/50 text-white py-2 rounded font-medium flex items-center justify-center"
-                    type="submit"
-                    disabled={formik.isSubmitting}
-                  >
-                    <span>Confirm</span>
-                  </Button>
-                </Form>
-              );
-            }}
+                <Button
+                  className="w-full bg-primary disabled:bg-secondary/50 text-white py-2 rounded font-medium flex items-center justify-center"
+                  type="submit"
+                  disabled={formik.isSubmitting}
+                >
+                  <span>Update</span>
+                </Button>
+              </Form>
+            )}
           </Formik>
         </DialogBody>
       </Dialog>
@@ -142,4 +142,4 @@ const EditProduct: React.FC<EditProps> = ({
   );
 };
 
-export default EditProduct;
+export default EditDepartmentForm;

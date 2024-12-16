@@ -5,9 +5,9 @@
 import {useState, useEffect} from "react";
 import axios from "axios";
 import {useSession} from "next-auth/react";
-import EditProduct from "./EditDepartment";
+import EditProduct, {EditDepartmentForm} from "./EditDepartment";
 import ViewProduct from "./ViewDepartment";
-import DeleteProduct from "./DeleteDepartment";
+import DeleteProduct, {DeleteDepartmentForm} from "./DeleteDepartment";
 import {TableDataD} from "../ui/table";
 import EmptyStateUi from "../ui/EmptyStateUi";
 import {API_URL} from "@/lib/axios";
@@ -143,20 +143,14 @@ const DepartmentList: React.FC = () => {
                         name={name}
                         subDepartments={subDepartments}
                       />
-                      {/* <EditProduct
-                    id={id}
-                    price={price}
-                    quantity={quantity}
-                    description={description}
-                    name={name}
-                  />
-                  <ViewProduct
-                    price={price}
-                    quantity={quantity}
-                    description={description}
-                    name={name}
-                  />
-                  <DeleteProduct id={id} /> */}
+                      <EditDepartmentForm
+                        fetchDepartments={fetchDepartments}
+                        department={{id, name}}
+                      />
+                      <DeleteDepartmentForm
+                        fetchDepartments={fetchDepartments}
+                        department={{id, name}}
+                      />
                     </td>
                   </tr>
                 )

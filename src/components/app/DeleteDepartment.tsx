@@ -1,29 +1,70 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {useState} from "react";
+import React, {useState} from "react";
+import axios from "axios";
 import {Dialog, DialogBody} from "@material-tailwind/react";
-import {CloseIcon, DeleteIcon} from "icons/index";
 import toast from "react-hot-toast";
+import {CloseIcon, DeleteIcon} from "icons/index";
 import Button from "../ui/button";
+import {API_URL} from "@/lib/axios";
+import {signOut, useSession} from "next-auth/react";
 
-interface EditProps {
-  id: string;
-}
-
-const DeleteDepartment: React.FC<EditProps> = ({id}) => {
+export const DeleteDepartmentForm = ({
+  fetchDepartments,
+  department,
+}: {
+  fetchDepartments: () => Promise<void>;
+  department: {id: string; name: string};
+}) => {
   const [open, setOpen] = useState(false);
+  const {data: session} = useSession();
 
-  // This function handle the modal state
   const handleOpen = () => setOpen(!open);
 
-  //   This function deletes product
-  const deleteFunction = async () => {
+  const handleDelete = async () => {
+    if (!session?.accessToken) {
+      signOut();
+      return;
+    }
+
     try {
-      toast.success("Product deleted successfully");
-      handleOpen();
+      const query = `
+		mutation DeleteDepartment($id: String!) {
+		  deleteDepartment(id: $id) {
+			message
+		  }
+		}
+	  `;
+
+      const variables = {id: department.id};
+
+      const response = await axios.post(
+        API_URL,
+        {
+          query,
+          variables,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+
+      const data = response.data?.data?.deleteDepartment;
+
+      if (!data) {
+        throw new Error(
+          response.data?.errors?.[0]?.message || "An error occurred"
+        );
+      }
+
+      toast.success(data.message || "Department deleted successfully");
+      fetchDepartments();
+      setOpen(false);
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.message || "An error occurred");
     }
   };
 
@@ -32,35 +73,37 @@ const DeleteDepartment: React.FC<EditProps> = ({id}) => {
       <button onClick={handleOpen}>
         <DeleteIcon />
       </button>
-      {/* This component represents the modal dialog for product deletion confirmation. */}
       <Dialog
         open={open}
         handler={handleOpen}
         className="focus:outline-none flex items-center justify-center rounded-none bg-transparent shadow-none"
       >
-        <DialogBody className="w-[300px] max-h-[90vh] p-0 bg-white rounded-10 overflow-hidden rounded-md">
-          <div className="flex justify-end p-3 border-b">
+        <DialogBody className="w-[400px] max-h-[90vh] p-0 bg-white rounded-10 overflow-hidden">
+          <div className="flex items-center justify-between p-3 border-b">
+            <p className="font-semibold text-lg">Delete Department</p>
             <button onClick={handleOpen}>
               <CloseIcon />
             </button>
           </div>
+
           <div className="p-4">
-            <p className="text-sm font-semibold text-center text-primary mb-4">
-              Are you sure you want to delete this product
+            <p className="text-gray-800">
+              Are you sure you want to delete the department{" "}
+              <span className="font-bold">{department.name}</span>? This action
+              cannot be undone.
             </p>
-            {/* This section contains the button to cofirm or cancel the delete  */}
-            <div className="flex justify-center gap-4">
-              <button
-                className="py-3 px-6 bg-transparent border border-primary rounded-md text-primary text-sm font-semibold"
+            <div className="flex justify-end gap-4 mt-6">
+              <Button
+                className="bg-gray-500 text-white py-2 px-4 rounded font-medium"
                 onClick={handleOpen}
               >
                 Cancel
-              </button>
+              </Button>
               <Button
-                className="py-3 px-6 bg-red-700 border border-red-700 rounded-md text-white text-sm font-semibold"
-                onClick={deleteFunction}
+                className="bg-red-500 text-white py-2 px-4 rounded font-medium"
+                onClick={handleDelete}
               >
-                <span>Delete</span>
+                Delete
               </Button>
             </div>
           </div>
@@ -70,4 +113,4 @@ const DeleteDepartment: React.FC<EditProps> = ({id}) => {
   );
 };
 
-export default DeleteDepartment;
+export default DeleteDepartmentForm;
