@@ -57,7 +57,7 @@ const ViewDepartment: React.FC<EditProps> = ({name, subDepartments}) => {
                           className="flex gap-2 text-sm text-black/80"
                           key={index}
                         >
-                          <p className="">{index + 1}</p>
+                          <p className="w-5">{index + 1}.</p>
                           <p className="">{name}</p>
                         </div>
                       );
