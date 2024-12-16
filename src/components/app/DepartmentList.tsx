@@ -13,6 +13,7 @@ import EmptyStateUi from "../ui/EmptyStateUi";
 import {API_URL} from "@/lib/axios";
 import moment from "moment";
 import ViewDepartment from "./ViewDepartment";
+import DepartmentForm from "./DepartmentForm";
 const TABLE_HEAD = ["#", "Name", "Date Created", "Actions"];
 
 const DepartmentList: React.FC = () => {
@@ -106,38 +107,43 @@ const DepartmentList: React.FC = () => {
   };
 
   return (
-    <div className="flex-grow overflow-y-auto lg:pr-2">
-      <table className="overflow-y-auto w-full min-w-full table-auto text-left">
-        <thead>
-          <tr className="border-b border-b-e1e6ef bg-[#f9f9f9]">
-            {TABLE_HEAD.map((head) => (
-              <th key={head} className="p-4 text-sm text-999 font-semibold">
-                {head}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y">
-          {data.length > 0 &&
-            data.map(
-              (
-                {id, name, createdAt, subDepartments}: Department,
-                index: number
-              ) => (
-                <tr key={id}>
-                  <TableDataD content={index + 1} />
-                  <TableDataD content={name} />
-                  <TableDataD
-                    content={moment(createdAt).format("MMMM DD, YYYY")}
-                  />
-                  <td className="flex items-center gap-3 p-4">
-                    <ViewDepartment
-                      createdAt={createdAt}
-                      id={id}
-                      name={name}
-                      subDepartments={subDepartments}
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="lg:text-lg font-medium">Departments</h1>
+        <DepartmentForm fetchDepartments={fetchDepartments} />
+      </div>
+      <div className="flex-grow overflow-y-auto lg:pr-2">
+        <table className="overflow-y-auto w-full min-w-full table-auto text-left">
+          <thead>
+            <tr className="border-b border-b-e1e6ef bg-[#f9f9f9]">
+              {TABLE_HEAD.map((head) => (
+                <th key={head} className="p-4 text-sm text-999 font-semibold">
+                  {head}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {data.length > 0 &&
+              data.map(
+                (
+                  {id, name, createdAt, subDepartments}: Department,
+                  index: number
+                ) => (
+                  <tr key={id}>
+                    <TableDataD content={index + 1} />
+                    <TableDataD content={name} />
+                    <TableDataD
+                      content={moment(createdAt).format("MMMM DD, YYYY")}
                     />
-                    {/* <EditProduct
+                    <td className="flex items-center gap-3 p-4">
+                      <ViewDepartment
+                        createdAt={createdAt}
+                        id={id}
+                        name={name}
+                        subDepartments={subDepartments}
+                      />
+                      {/* <EditProduct
                     id={id}
                     price={price}
                     quantity={quantity}
@@ -151,18 +157,19 @@ const DepartmentList: React.FC = () => {
                     name={name}
                   />
                   <DeleteProduct id={id} /> */}
-                  </td>
-                </tr>
-              )
-            )}
-        </tbody>
-      </table>
-      {loading ? (
-        <div className="p-4 text-center">Loading...</div>
-      ) : (
-        data.length < 1 && <EmptyStateUi />
-      )}
-    </div>
+                    </td>
+                  </tr>
+                )
+              )}
+          </tbody>
+        </table>
+        {loading ? (
+          <div className="p-4 text-center">Loading...</div>
+        ) : (
+          data.length < 1 && <EmptyStateUi />
+        )}
+      </div>
+    </>
   );
 };
 

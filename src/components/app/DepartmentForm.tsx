@@ -10,9 +10,16 @@ import toast from "react-hot-toast";
 import {CloseIcon} from "icons/index";
 import {Input} from "../ui/forms";
 import Button from "../ui/button";
+import {API_URL} from "@/lib/axios";
+import {signOut, useSession} from "next-auth/react";
 
-const DepartmentForm: React.FC = () => {
+export const DepartmentForm = ({
+  fetchDepartments,
+}: {
+  fetchDepartments: () => Promise<void>;
+}) => {
   const [open, setOpen] = useState(false);
+  const {data: session} = useSession();
 
   const handleOpen = () => setOpen(!open);
 
@@ -28,15 +35,53 @@ const DepartmentForm: React.FC = () => {
     values: typeof initialValues,
     {setSubmitting}: any
   ) => {
+    if (!session?.accessToken) {
+      signOut();
+      return;
+    }
+
     try {
-      const payload = {...values};
+      const query = `
+		mutation CreateDepartment($createDepartmentDto: CreateDepartmentDto!) {
+		  createDepartment(createDepartmentDto: $createDepartmentDto) {
+			id
+			name
+		  }
+		}
+	  `;
 
-      await axios.post("/api/departments", payload); // Adjust the endpoint URL as necessary
+      const variables = {
+        createDepartmentDto: {
+          name: values.name, // Assuming `name` is a property in the `CreateDepartmentDto`
+        },
+      };
 
-      toast.success("Department added successfully");
+      const response = await axios.post(
+        API_URL,
+        {
+          query,
+          variables,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+
+      const data = response.data?.data?.createDepartment;
+
+      if (!data) {
+        throw new Error(
+          response.data?.errors?.[0]?.message || "An error occurred"
+        );
+      }
+
+      toast.success(`Department "${data.name}" added successfully`);
+      fetchDepartments();
       setOpen(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.message || "Failed to create department");
     } finally {
       setSubmitting(false);
     }
@@ -75,7 +120,7 @@ const DepartmentForm: React.FC = () => {
                     type="text"
                     name="name"
                     label="Name"
-                    placeholder="Name"
+                    placeholder="Enter department name"
                   />
                 </div>
 
