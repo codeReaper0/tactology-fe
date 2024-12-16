@@ -1,69 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import {getSession, signOut} from "next-auth/react";
-import Cookies from "js-cookie";
+import {signOut} from "next-auth/react";
 
-export const API_URL = "https://tactology-be-ybj6.onrender.com/graphql"; // Replace with your GraphQL endpoint
+export const API_URL = "https://tactology-be-ybj6.onrender.com/";
 
 // Create an Axios instance
-const axiosInstance = axios.create({
+const apiClient = axios.create({
   baseURL: API_URL,
-  withCredentials: true,
 });
 
-// Function to retrieve the access token from the session
-const getAccessToken = async (): Promise<string | null> => {
-  const session = await getSession();
-  return session?.accessToken || null; // Access token from NextAuth session
-};
+apiClient.interceptors.response.use(
+  (response) => response, // Let successful responses pass through
+  async (error) => {
+    if (error.response && error.response.status === 400) {
+      const message = error.response.data?.message;
 
-// Axios request function for GraphQL requests
-export const axiosGraphQLRequest = async (
-  query: string,
-  variables: any = null
-): Promise<any> => {
-  try {
-    const accessToken = await getAccessToken();
-
-    // Config for the GraphQL request
-    const config: any = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      data: {
-        query,
-        variables,
-      },
-    };
-
-    // Conditionally add Authorization header if accessToken exists
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      // Check if the error message corresponds to token expiration
+      if (message && message.toLowerCase().includes("token expired")) {
+        await signOut({callbackUrl: "/login"}); // Redirect user to login
+      }
     }
-
-    const response = await axiosInstance(config);
-    return response?.data; // Return response data
-  } catch (error: any) {
-    console.error("GraphQL request failed:", error);
-    if (axios.isAxiosError(error)) {
-      // Handle specific Axios error cases here
-    }
-    throw error;
-  }
-};
-
-// Axios interceptor to handle 401 errors
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      signOut();
-      Cookies.remove("user"); // Remove any related user cookies
-    }
-    return Promise.reject(error);
+    return Promise.reject(error); // Forward the error for further handling
   }
 );
 
-export default axiosInstance;
+export default apiClient;

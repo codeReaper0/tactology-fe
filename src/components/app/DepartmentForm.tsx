@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, {useState} from "react";
-import axios from "axios";
 import {Formik, Form} from "formik";
 import * as Yup from "yup";
 import {Dialog, DialogBody} from "@material-tailwind/react";
@@ -10,7 +9,7 @@ import toast from "react-hot-toast";
 import {CloseIcon} from "icons/index";
 import {Input} from "../ui/forms";
 import Button from "../ui/button";
-import {API_URL} from "@/lib/axios";
+import apiClient, {API_URL} from "@/lib/axios";
 import {signOut, useSession} from "next-auth/react";
 
 export const DepartmentForm = ({
@@ -56,8 +55,8 @@ export const DepartmentForm = ({
         },
       };
 
-      const response = await axios.post(
-        API_URL,
+      const response = await apiClient.post(
+        "graphql",
         {
           query,
           variables,

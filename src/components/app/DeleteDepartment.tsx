@@ -2,12 +2,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, {useState} from "react";
-import axios from "axios";
 import {Dialog, DialogBody} from "@material-tailwind/react";
 import toast from "react-hot-toast";
 import {CloseIcon, DeleteIcon} from "icons/index";
 import Button from "../ui/button";
-import {API_URL} from "@/lib/axios";
+import apiClient from "@/lib/axios";
 import {signOut, useSession} from "next-auth/react";
 
 export const DeleteDepartmentForm = ({
@@ -39,8 +38,8 @@ export const DeleteDepartmentForm = ({
 
       const variables = {id: department.id};
 
-      const response = await axios.post(
-        API_URL,
+      const response = await apiClient.post(
+        "/graphql",
         {
           query,
           variables,

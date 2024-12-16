@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import {CloseIcon, EditIcon} from "icons/index";
 import {Input} from "../ui/forms";
 import Button from "../ui/button";
-import {API_URL} from "@/lib/axios";
+import apiClient, {API_URL} from "@/lib/axios";
 import {signOut, useSession} from "next-auth/react";
 
 export const EditDepartmentForm = ({
@@ -59,8 +59,8 @@ export const EditDepartmentForm = ({
         },
       };
 
-      const response = await axios.post(
-        API_URL,
+      const response = await apiClient.post(
+        "graphql",
         {
           query,
           variables,

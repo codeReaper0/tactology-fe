@@ -10,7 +10,7 @@ import ViewProduct from "./ViewDepartment";
 import DeleteProduct, {DeleteDepartmentForm} from "./DeleteDepartment";
 import {TableDataD} from "../ui/table";
 import EmptyStateUi from "../ui/EmptyStateUi";
-import {API_URL} from "@/lib/axios";
+import apiClient, {API_URL} from "@/lib/axios";
 import moment from "moment";
 import ViewDepartment from "./ViewDepartment";
 import DepartmentForm from "./DepartmentForm";
@@ -70,8 +70,8 @@ const DepartmentList: React.FC = () => {
     };
 
     try {
-      const response = await axios.post(
-        API_URL,
+      const response = await apiClient.post(
+        "graphql",
         {query, variables},
         {
           headers: {
