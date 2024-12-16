@@ -51,22 +51,22 @@ const ViewDepartment: React.FC<EditProps> = ({name, subDepartments}) => {
 
                 {subDepartments !== null ? (
                   subDepartments.length > 0 ? (
-                    subDepartments.map(({id, name}, index) => {
+                    subDepartments.map(({name}, index) => {
                       return (
                         <div
-                          className="flex gap-2 text-sm text-black/50"
+                          className="flex gap-2 text-sm text-black/80"
                           key={index}
                         >
-                          <p className="">{id}</p>
+                          <p className="">{index + 1}</p>
                           <p className="">{name}</p>
                         </div>
                       );
                     })
                   ) : (
-                    <p>No sub departments yet</p>
+                    <p className="text-sm">No sub departments yet</p>
                   )
                 ) : (
-                  <p>No sub departments yet</p>
+                  <p className="text-sm">No sub departments yet</p>
                 )}
               </div>
             </div>

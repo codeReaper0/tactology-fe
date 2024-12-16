@@ -14,6 +14,7 @@ import apiClient, {API_URL} from "@/lib/axios";
 import moment from "moment";
 import ViewDepartment from "./ViewDepartment";
 import DepartmentForm from "./DepartmentForm";
+import SubDepartmentForm from "./SubDepartment";
 const TABLE_HEAD = ["#", "Name", "Date Created", "Actions"];
 
 const DepartmentList: React.FC = () => {
@@ -38,13 +39,6 @@ const DepartmentList: React.FC = () => {
             subDepartments {
               id
               name
-              department {
-                id
-                name
-                createdAt
-                updatedAt
-                deletedAt
-              }
               createdAt
               updatedAt
               deletedAt
@@ -150,6 +144,10 @@ const DepartmentList: React.FC = () => {
                       <DeleteDepartmentForm
                         fetchDepartments={fetchDepartments}
                         department={{id, name}}
+                      />
+                      <SubDepartmentForm
+                        departmentId={id}
+                        fetchDepartments={fetchDepartments}
                       />
                     </td>
                   </tr>
